@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Function Test - 80 Questions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        input[type="range"] {
+            accent-color: #6366f1;
+            height: 14px;
+            border-radius: 9999px;
+        }
+        .value-display {
+            font-size: 2.25rem;
+            font-weight: 700;
+            min-width: 110px;
+            text-align: center;
+        }
+        .question-card {
+            transition: transform 0.2s;
+        }
+        .question-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+
+<div class="max-w-4xl mx-auto p-8">
+
+    <!-- Rules Screen -->
+    <div id="rules-screen">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-12 max-w-2xl mx-auto">
+            <h1 class="text-4xl font-bold text-center mb-10">Cognitive Function Test</h1>
+            
+            <div class="mb-10">
+                <h2 class="text-2xl font-semibold mb-6">Important Instructions Before Starting</h2>
+                <ul class="space-y-8 text-lg">
+                    <li class="flex gap-4">
+                        <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
+                        <div>
+                            <strong>Answer based on how you generally are in life</strong><br>
+                            Think about your natural patterns and typical behavior over a long period of time, not just how you feel today or in one specific situation. Choose the side that best represents you most of the time in everyday life.
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
+                        <div>
+                            <strong>Be honest with yourself</strong><br>
+                            There are no right or wrong answers. This test works best when you answer truthfully about your real preferences and habits. Do not try to choose what you think sounds better or what you wish you were like.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <p class="text-slate-500 mb-4">To continue, please type the word <strong>confirm</strong> below:</p>
+                <input id="confirm-input" type="text" 
+                       class="w-full max-w-xs mx-auto block border border-slate-300 dark:border-slate-600 bg-transparent rounded-2xl px-6 py-4 text-center text-xl focus:outline-none focus:border-indigo-500"
+                       placeholder="type confirm">
+                <button onclick="startTest()" 
+                        class="mt-8 px-16 py-6 bg-indigo-600 text-white font-semibold text-2xl rounded-3xl disabled:opacity-50"
+                        id="start-btn" disabled>
+                    Start the Test
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Test -->
+    <div id="test-screen" class="hidden">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold">Cognitive Function Test</h1>
+            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">80 questions • Slide toward the side you relate to more</p>
+        </div>
+
+        <div id="questions-container" class="space-y-12"></div>
+
+        <div class="flex justify-center mt-20">
+            <button onclick="submitTest()"
+                    class="px-20 py-8 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-3xl rounded-3xl shadow-2xl transition-all">
+                Finish Test &amp; See Results
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results-screen" class="hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-14">
+            <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold">Your Cognitive Function Order</h2>
+                <p class="text-slate-500 dark:text-slate-400 mt-4">Ranked ascending (least used → most used) with percentages</p>
+            </div>
+            <div id="function-list" class="space-y-7"></div>
+
+            <!-- New AI Analysis Button -->
+            <div class="mt-16 text-center">
+                <button onclick="openAI Analysis()" 
+                        class="px-16 py-6 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold text-2xl rounded-3xl shadow-xl hover:scale-105 transition-all">
+                    Get Deep AI Analysis of My Results
+                </button>
+                <p class="text-sm text-slate-500 mt-4">Opens ChatGPT with your full results + detailed prompt</p>
+            </div>
+
+            <div class="flex justify-center gap-6 mt-12">
+                <button onclick="copyResults()" class="px-12 py-6 bg-slate-100 dark:bg-slate-800 rounded-3xl font-medium text-xl">📋 Copy Results</button>
+                <button onclick="saveAsImage()" class="px-12 py-6 bg-indigo-600 text-white rounded-3xl font-medium text-xl">📸 Save Image</button>
+            </div>
+            <div class="text-center mt-12">
+                <button onclick="restartTest()" class="underline text-slate-500">Retake Test</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Full 80 bipolar questions
+const questions = [
+    // 1-20: Se vs Si
+    {left: "I thrive on spontaneous adventures and new sensory experiences right now.", right: "I rely on past experiences and proven methods that have always worked."},
+    {left: "I live fully in the moment and react immediately to what is happening.", right: "I prefer stability, predictability, and consistent routines."},
+    {left: "I quickly notice concrete details and physical things around me.", right: "I compare new situations to similar past experiences."},
+    {left: "I enjoy trying new foods, activities, and sensations without overthinking.", right: "I find comfort in familiar places, habits, and reliable ways."},
+    {left: "I am action-oriented and jump into things right away.", right: "I approach tasks carefully and methodically using what I know works."},
+    {left: "I get energized by fast-paced and stimulating environments.", right: "I pay close attention to how things have always been done."},
+    {left: "I trust my immediate impressions and gut reactions.", right: "I have a strong, detailed memory for facts and past events."},
+    {left: "I focus on the here-and-now realities.", right: "I respect established procedures and traditions."},
+    {left: "I prefer to engage with the physical world directly and hands-on.", right: "I find security in reliable habits and familiar sensory details."},
+    {left: "I notice new opportunities in my immediate surroundings.", right: "I value things that have proven reliable over time."},
+    {left: "I love variety and new physical experiences.", right: "I like things to stay consistent and predictable."},
+    {left: "I react quickly to changes in my environment.", right: "I prefer to stick with what I know works."},
+    {left: "I enjoy being in the middle of action and excitement.", right: "I feel comfortable with familiar routines."},
+    {left: "I trust what I see and experience right now.", right: "I trust what has worked well in the past."},
+    {left: "I like to try new things on the spot.", right: "I like to follow proven methods."},
+    {left: "I am energized by novelty and change.", right: "I am energized by stability and continuity."},
+    {left: "I focus on current sensory input.", right: "I focus on past sensory memories."},
+    {left: "I prefer to improvise in the moment.", right: "I prefer to plan based on previous experience."},
+    {left: "I notice small changes in my surroundings immediately.", right: "I remember small details from the past clearly."},
+    {left: "I enjoy physical movement and activity.", right: "I enjoy quiet reflection on past experiences."},
+
+    // 21-40: Ne vs Ni
+    {left: "I love brainstorming many different possibilities and 'what if' ideas.", right: "I have strong gut feelings and visions about the future."},
+    {left: "I easily see connections between seemingly unrelated things.", right: "I focus on long-term visions and underlying meanings."},
+    {left: "I get bored with routine and seek variety and new options.", right: "I seek to understand the core essence behind events."},
+    {left: "I often have many different projects or ideas going at once.", right: "I prefer to converge on one clear best direction."},
+    {left: "I think divergently and let my mind branch in many directions.", right: "I spend time reflecting on future implications."},
+    {left: "I am inspired by new concepts and emerging trends.", right: "I notice symbolic meanings and hidden patterns."},
+    {left: "I enjoy debating ideas and bouncing possibilities off others.", right: "I am strategic and forward-thinking about where things are headed."},
+    {left: "I look for patterns and opportunities in the world around me.", right: "I trust my internal foresight and intuitive vision."},
+    {left: "I am naturally creative and come up with fresh approaches.", right: "I have a deep sense of purpose guiding my choices."},
+    {left: "I explore hypothetical situations for fun.", right: "I predict likely outcomes based on subtle trends."},
+    {left: "I enjoy keeping many options open.", right: "I like to narrow down to the most likely path."},
+    {left: "I see many possible futures.", right: "I see one clear future direction."},
+    {left: "I love generating new ideas quickly.", right: "I prefer to develop one deep insight."},
+    {left: "I get excited by potential and possibilities.", right: "I get excited by certainty and foresight."},
+    {left: "I connect unrelated concepts easily.", right: "I see the single underlying pattern."},
+    {left: "I prefer divergent thinking.", right: "I prefer convergent thinking."},
+    {left: "I am comfortable with ambiguity and multiple paths.", right: "I seek clarity and a single best path."},
+    {left: "I enjoy playing with ideas.", right: "I enjoy refining a vision."},
+    {left: "I see many ways things could go.", right: "I see where things are inevitably heading."},
+    {left: "I thrive on brainstorming sessions.", right: "I thrive on quiet strategic thinking."},
+
+    // 41-60: Te vs Ti
+    {left: "I enjoy organizing people and tasks to achieve efficient results.", right: "I analyze things deeply to understand their internal logic."},
+    {left: "I focus on measurable outcomes and getting things done.", right: "I seek absolute logical consistency and accuracy."},
+    {left: "I like creating clear plans and systems.", right: "I prefer to think independently and question assumptions."},
+    {left: "I value logic, objectivity, and evidence-based decisions.", right: "I value personal intellectual integrity over consensus."},
+    {left: "I am skilled at managing time and ensuring completion.", right: "I enjoy breaking complex ideas into fundamental principles."},
+    {left: "I prefer clear structures and hierarchies.", right: "I spend time refining my own internal models."},
+    {left: "I quickly spot inefficiencies and fix them.", right: "I am excellent at troubleshooting root causes."},
+    {left: "I make decisions based on facts and logical consequences.", right: "I make decisions based on careful personal analysis."},
+    {left: "I am assertive when implementing plans.", right: "I enjoy puzzles requiring deep logical thought."},
+    {left: "I naturally think in terms of cause-and-effect.", right: "I strive for complete intellectual independence."},
+    {left: "I focus on practical results and efficiency.", right: "I focus on internal logical truth."},
+    {left: "I like things to be organized externally.", right: "I like things to make sense internally."},
+    {left: "I enjoy leading and directing others.", right: "I enjoy understanding how things work."},
+    {left: "I value productivity and measurable success.", right: "I value precision and accuracy."},
+    {left: "I prefer objective standards.", right: "I prefer my own logical framework."},
+    {left: "I am good at executing plans.", right: "I am good at analyzing concepts."},
+    {left: "I focus on what works in the real world.", right: "I focus on what is logically consistent."},
+    {left: "I like to optimize external systems.", right: "I like to perfect internal understanding."},
+    {left: "I make quick, decisive calls based on logic.", right: "I take time to ensure logical soundness."},
+    {left: "I enjoy achieving tangible goals.", right: "I enjoy solving complex problems."},
+
+    // 61-80: Fe vs Fi
+    {left: "I prioritize group harmony and other people’s feelings.", right: "I have a strong personal moral code that guides me."},
+    {left: "I am highly attuned to the emotional atmosphere.", right: "I deeply value authenticity and being true to myself."},
+    {left: "I enjoy helping others and creating positive group experiences.", right: "I make choices based on what feels right to my inner values."},
+    {left: "I express emotions openly and value social norms.", right: "I experience emotions intensely but keep them private."},
+    {left: "I am skilled at reading people and maintaining harmony.", right: "I prioritize my own sense of integrity."},
+    {left: "I make decisions based on what is best for the group.", right: "I am passionate about causes that align with my core values."},
+    {left: "I seek social approval and strong relationships.", right: "I reflect on my own emotions and what truly matters."},
+    {left: "I am diplomatic and considerate of others’ feelings.", right: "I remain loyal to my personal beliefs."},
+    {left: "I feel responsible for the emotional well-being of the group.", right: "I find it important to express my unique identity."},
+    {left: "I value traditions that bring people together.", right: "I judge situations based on personal moral rightness."},
+    {left: "I focus on group needs and harmony.", right: "I focus on my own inner values."},
+    {left: "I like to create a positive atmosphere for everyone.", right: "I like to stay true to who I am."},
+    {left: "I am sensitive to how others feel.", right: "I am sensitive to my own moral compass."},
+    {left: "I adjust my behavior to keep peace.", right: "I stay authentic even if it causes tension."},
+    {left: "I value social connection and belonging.", right: "I value individual authenticity."},
+    {left: "I consider the impact on others first.", right: "I consider my own values first."},
+    {left: "I enjoy making people feel included.", right: "I enjoy living according to my principles."},
+    {left: "I am good at mediating conflicts.", right: "I am good at standing by my convictions."},
+    {left: "I feel happy when the group is happy.", right: "I feel happy when I am being true to myself."},
+    {left: "I prioritize collective well-being.", right: "I prioritize personal integrity."}
+];
+
+let answers = new Array(80).fill(50);
+
+function startTest() {
+    const input = document.getElementById('confirm-input').value.trim().toLowerCase();
+    if (input === "confirm") {
+        document.getElementById('rules-screen').classList.add('hidden');
+        document.getElementById('test-screen').classList.remove('hidden');
+        renderQuestions();
+    } else {
+        alert("Please type the word 'confirm' exactly to continue.");
+    }
+}
+
+function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    let html = '';
+    questions.forEach((q, i) => {
+        const id = `q${i}`;
+        const num = i + 1;
+        html += `
+            <div class="question-card bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-10">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-2xl flex items-center justify-center font-bold text-xl">${num}</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div>
+                        <div class="text-xs uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">LEFT SIDE</div>
+                        <div class="text-slate-700 dark:text-slate-200 text-lg leading-relaxed">${q.left}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-widest text-rose-600 dark:text-rose-400 mb-2">RIGHT SIDE</div>
+                        <div class="text-slate-700 dark:text-slate-200 text-lg leading-relaxed">${q.right}</div>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center mt-10">
+                    <input type="range" id="${id}" min="0" max="100" value="50"
+                           oninput="updateValue(this, ${i})" class="w-full mb-4">
+                    <div class="flex justify-between w-full text-sm text-slate-400">
+                        <span>Left</span>
+                        <span id="${id}-val" class="font-bold text-indigo-600 dark:text-indigo-400 text-2xl">50%</span>
+                        <span>Right</span>
+                    </div>
+                </div>
+            </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function updateValue(slider, index) {
+    const raw = parseInt(slider.value);
+    const displayVal = 50 + Math.abs(raw - 50);
+    document.getElementById(slider.id + '-val').textContent = displayVal + '%';
+    answers[index] = raw;
+}
+
+function submitTest() {
+    document.getElementById('test-screen').classList.add('hidden');
+    document.getElementById('results-screen').classList.remove('hidden');
+    showResults();
+}
+
+function calculateFunctionScores() {
+    let scores = { Se: 0, Si: 0, Ne: 0, Ni: 0, Te: 0, Ti: 0, Fe: 0, Fi: 0 };
+    for (let pair = 0; pair < 4; pair++) {
+        for (let i = 0; i < 20; i++) {
+            const idx = pair * 20 + i;
+            const raw = answers[idx];
+            const distance = Math.abs(raw - 50);
+            const strength = distance * 2;
+            let leftScore = 0;
+            let rightScore = 0;
+            if (raw < 50) leftScore = strength;
+            else if (raw > 50) rightScore = strength;
+            if (pair === 0) { scores.Se += leftScore; scores.Si += rightScore; }
+            if (pair === 1) { scores.Ne += leftScore; scores.Ni += rightScore; }
+            if (pair === 2) { scores.Te += leftScore; scores.Ti += rightScore; }
+            if (pair === 3) { scores.Fe += leftScore; scores.Fi += rightScore; }
+        }
+    }
+    Object.keys(scores).forEach(key => {
+        scores[key] = Math.round(scores[key] / 20);
+    });
+    return scores;
+}
+
+function showResults() {
+    const scores = calculateFunctionScores();
+    const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
+    const container = document.getElementById('function-list');
+    container.innerHTML = '';
+    sorted.forEach(func => {
+        const perc = scores[func];
+        const div = document.createElement('div');
+        div.className = "flex items-center gap-8 p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl";
+        div.innerHTML = `
+            <div class="w-20 text-5xl font-bold text-indigo-600">${func}</div>
+            <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-indigo-500 to-violet-500" style="width: ${perc}%"></div>
+            </div>
+            <div class="text-right font-bold text-6xl">${perc}<span class="text-2xl align-super font-normal">%</span></div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// New function: Open ChatGPT with full prompt + all results
+function openAIAnalysis() {
+    const scores = calculateFunctionScores();
+    let resultsText = "";
+    const sorted = Object.keys(scores).sort((a, b) => scores[b] - scores[a]); // descending for better reading
+    sorted.forEach(f => {
+        resultsText += `${f} ${scores[f]}%\n`;
+    });
+
+    const prompt = `You are an expert in cognitive functions. I just took a test that ranked the 8 cognitive functions in my ascendant order with percentages.
+
+Here are my full results:
+
+${resultsText}
+
+Please give me a comprehensive, honest, and detailed explanation of what this specific function order and these percentages mean about me as a person.
+
+For each function in my ranking, explain:
+- What it says about my natural way of thinking and behaving
+- How strongly it influences me based on the percentage
+- How it interacts with the functions above and below it
+- Real-life examples of how I probably show up in daily life, decision-making, relationships, work, and stress
+
+Also explain:
+- My overall cognitive style and default way of engaging with the world
+- My biggest strengths
+- My potential blind spots or growth areas
+- How the combination of my top functions creates a unique way I process life
+
+Be direct, insightful, and practical. Use clear language and avoid fluff.`;
+
+    const encodedPrompt = encodeURIComponent(prompt);
+    window.open(`https://chatgpt.com/?prompt=${encodedPrompt}`, '_blank');
+}
+
+function copyResults() {
+    const scores = calculateFunctionScores();
+    const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
+    let text = "My Cognitive Function Order (ascending - least to most used):\n\n";
+    sorted.forEach(f => text += `${f}: ${scores[f]}%\n`);
+    navigator.clipboard.writeText(text).then(() => alert("Results copied!"));
+}
+
+function saveAsImage() {
+    const resultsDiv = document.getElementById('results-screen');
+    html2canvas(resultsDiv, {scale: 2}).then(canvas => {
+        const a = document.createElement('a');
+        a.download = 'cognitive-function-results.png';
+        a.href = canvas.toDataURL();
+        a.click();
+    });
+}
+
+function restartTest() {
+    location.reload();
+}
+
+// Initialize
+document.getElementById('confirm-input').addEventListener('input', function() {
+    const btn = document.getElementById('start-btn');
+    btn.disabled = this.value.trim().toLowerCase() !== "confirm";
+});
+</script>
+
+</body>
+</html>
