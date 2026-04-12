@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive Function Test - 80 Questions</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Production-friendly Tailwind CDN (no warning on GitHub Pages) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
     <style>
         body { font-family: 'Inter', system_ui, sans-serif; }
         input[type="range"] {
             accent-color: #6366f1;
             height: 14px;
             border-radius: 9999px;
-        }
-        .value-display {
-            font-size: 2.25rem;
-            font-weight: 700;
-            min-width: 110px;
-            text-align: center;
         }
         .question-card {
             transition: transform 0.2s;
@@ -96,9 +94,9 @@
             </div>
             <div id="function-list" class="space-y-7"></div>
 
-            <!-- New AI Analysis Button -->
+            <!-- AI Analysis Button -->
             <div class="mt-16 text-center">
-                <button onclick="openAI Analysis()" 
+                <button onclick="openAIAnalysis()" 
                         class="px-16 py-6 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold text-2xl rounded-3xl shadow-xl hover:scale-105 transition-all">
                     Get Deep AI Analysis of My Results
                 </button>
@@ -117,7 +115,7 @@
 </div>
 
 <script>
-// Full 80 bipolar questions
+// ==================== 80 QUESTIONS ====================
 const questions = [
     // 1-20: Se vs Si
     {left: "I thrive on spontaneous adventures and new sensory experiences right now.", right: "I rely on past experiences and proven methods that have always worked."},
@@ -283,6 +281,7 @@ function calculateFunctionScores() {
             let rightScore = 0;
             if (raw < 50) leftScore = strength;
             else if (raw > 50) rightScore = strength;
+
             if (pair === 0) { scores.Se += leftScore; scores.Si += rightScore; }
             if (pair === 1) { scores.Ne += leftScore; scores.Ni += rightScore; }
             if (pair === 2) { scores.Te += leftScore; scores.Ti += rightScore; }
@@ -315,11 +314,11 @@ function showResults() {
     });
 }
 
-// New function: Open ChatGPT with full prompt + all results
+// === NEW: Open ChatGPT with full prompt + all results ===
 function openAIAnalysis() {
     const scores = calculateFunctionScores();
     let resultsText = "";
-    const sorted = Object.keys(scores).sort((a, b) => scores[b] - scores[a]); // descending for better reading
+    const sorted = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
     sorted.forEach(f => {
         resultsText += `${f} ${scores[f]}%\n`;
     });
@@ -346,8 +345,8 @@ Also explain:
 
 Be direct, insightful, and practical. Use clear language and avoid fluff.`;
 
-    const encodedPrompt = encodeURIComponent(prompt);
-    window.open(`https://chatgpt.com/?prompt=${encodedPrompt}`, '_blank');
+    const encoded = encodeURIComponent(prompt);
+    window.open(`https://chatgpt.com/?prompt=${encoded}`, '_blank');
 }
 
 function copyResults() {
