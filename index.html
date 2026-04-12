@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognitive Function Test - 80 Questions</title>
-    
-    <!-- Production-friendly Tailwind CDN (no warning on GitHub Pages) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    
     <style>
         body { font-family: 'Inter', system_ui, sans-serif; }
         input[type="range"] {
@@ -314,7 +310,7 @@ function showResults() {
     });
 }
 
-// === NEW: Open ChatGPT with full prompt + all results ===
+// FIXED: Open ChatGPT with full prompt + all results
 function openAIAnalysis() {
     const scores = calculateFunctionScores();
     let resultsText = "";
@@ -345,8 +341,8 @@ Also explain:
 
 Be direct, insightful, and practical. Use clear language and avoid fluff.`;
 
-    const encoded = encodeURIComponent(prompt);
-    window.open(`https://chatgpt.com/?prompt=${encoded}`, '_blank');
+    const encodedPrompt = encodeURIComponent(prompt);
+    window.open(`https://chatgpt.com/?prompt=${encodedPrompt}`, '_blank');
 }
 
 function copyResults() {
