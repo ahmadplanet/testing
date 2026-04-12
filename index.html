@@ -37,14 +37,14 @@
                         <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
                         <div>
                             <strong>Answer based on how you generally are in life</strong><br>
-                            Think about your natural patterns and typical behavior over a long period of time, not just how you feel today or in one specific situation. Choose the side that best represents you most of the time in everyday life.
+                            Think about your natural patterns and typical behavior over a long period of time, not just how you feel today.
                         </div>
                     </li>
                     <li class="flex gap-4">
                         <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
                         <div>
                             <strong>Be honest with yourself</strong><br>
-                            There are no right or wrong answers. This test works best when you answer truthfully about your real preferences and habits. Do not try to choose what you think sounds better or what you wish you were like.
+                            There are no right or wrong answers. This test works best when you answer truthfully.
                         </div>
                     </li>
                 </ul>
@@ -90,7 +90,6 @@
             </div>
             <div id="function-list" class="space-y-7"></div>
 
-            <!-- AI Analysis Button -->
             <div class="mt-16 text-center">
                 <button onclick="openAIAnalysis()" 
                         class="px-16 py-6 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold text-2xl rounded-3xl shadow-xl hover:scale-105 transition-all">
@@ -111,7 +110,7 @@
 </div>
 
 <script>
-// ==================== 80 QUESTIONS ====================
+// ==================== ALL 80 QUESTIONS ====================
 const questions = [
     // 1-20: Se vs Si
     {left: "I thrive on spontaneous adventures and new sensory experiences right now.", right: "I rely on past experiences and proven methods that have always worked."},
@@ -202,7 +201,7 @@ const questions = [
     {left: "I prioritize collective well-being.", right: "I prioritize personal integrity."}
 ];
 
-let answers = new Array(80).fill(50);
+let answers = new Array(80).fill(50); // 0 = 100% Left, 100 = 100% Right
 
 function startTest() {
     const input = document.getElementById('confirm-input').value.trim().toLowerCase();
@@ -242,9 +241,9 @@ function renderQuestions() {
                     <input type="range" id="${id}" min="0" max="100" value="50"
                            oninput="updateValue(this, ${i})" class="w-full mb-4">
                     <div class="flex justify-between w-full text-sm text-slate-400">
-                        <span>Left</span>
-                        <span id="${id}-val" class="font-bold text-indigo-600 dark:text-indigo-400 text-2xl">50%</span>
-                        <span>Right</span>
+                        <span id="${id}-left">Left 50%</span>
+                        <span id="${id}-val" class="font-bold text-indigo-600 dark:text-indigo-400 text-2xl">50% / 50%</span>
+                        <span id="${id}-right">Right 50%</span>
                     </div>
                 </div>
             </div>`;
@@ -253,10 +252,42 @@ function renderQuestions() {
 }
 
 function updateValue(slider, index) {
-    const raw = parseInt(slider.value);
-    const displayVal = 50 + Math.abs(raw - 50);
-    document.getElementById(slider.id + '-val').textContent = displayVal + '%';
+    const raw = parseInt(slider.value);        // 0 = full Left, 100 = full Right
+    const leftPercent = 100 - raw;
+    const rightPercent = raw;
+
     answers[index] = raw;
+
+    // Update display
+    document.getElementById(slider.id + '-left').textContent = `Left ${leftPercent}%`;
+    document.getElementById(slider.id + '-right').textContent = `Right ${rightPercent}%`;
+    document.getElementById(slider.id + '-val').textContent = `${leftPercent}% / ${rightPercent}%`;
+}
+
+function calculateFunctionScores() {
+    let scores = { Se: 0, Si: 0, Ne: 0, Ni: 0, Te: 0, Ti: 0, Fe: 0, Fi: 0 };
+
+    for (let pair = 0; pair < 4; pair++) {
+        for (let i = 0; i < 20; i++) {
+            const idx = pair * 20 + i;
+            const raw = answers[idx];
+
+            const leftPercent = 100 - raw;
+            const rightPercent = raw;
+
+            if (pair === 0) { scores.Se += leftPercent; scores.Si += rightPercent; }  // Se Left / Si Right
+            if (pair === 1) { scores.Ne += leftPercent; scores.Ni += rightPercent; }  // Ne Left / Ni Right
+            if (pair === 2) { scores.Te += leftPercent; scores.Ti += rightPercent; }  // Te Left / Ti Right
+            if (pair === 3) { scores.Fe += leftPercent; scores.Fi += rightPercent; }  // Fe Left / Fi Right
+        }
+    }
+
+    // Average and round to whole number
+    Object.keys(scores).forEach(key => {
+        scores[key] = Math.round(scores[key] / 20);
+    });
+
+    return scores;
 }
 
 function submitTest() {
@@ -265,36 +296,12 @@ function submitTest() {
     showResults();
 }
 
-function calculateFunctionScores() {
-    let scores = { Se: 0, Si: 0, Ne: 0, Ni: 0, Te: 0, Ti: 0, Fe: 0, Fi: 0 };
-    for (let pair = 0; pair < 4; pair++) {
-        for (let i = 0; i < 20; i++) {
-            const idx = pair * 20 + i;
-            const raw = answers[idx];
-            const distance = Math.abs(raw - 50);
-            const strength = distance * 2;
-            let leftScore = 0;
-            let rightScore = 0;
-            if (raw < 50) leftScore = strength;
-            else if (raw > 50) rightScore = strength;
-
-            if (pair === 0) { scores.Se += leftScore; scores.Si += rightScore; }
-            if (pair === 1) { scores.Ne += leftScore; scores.Ni += rightScore; }
-            if (pair === 2) { scores.Te += leftScore; scores.Ti += rightScore; }
-            if (pair === 3) { scores.Fe += leftScore; scores.Fi += rightScore; }
-        }
-    }
-    Object.keys(scores).forEach(key => {
-        scores[key] = Math.round(scores[key] / 20);
-    });
-    return scores;
-}
-
 function showResults() {
     const scores = calculateFunctionScores();
     const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
     const container = document.getElementById('function-list');
     container.innerHTML = '';
+
     sorted.forEach(func => {
         const perc = scores[func];
         const div = document.createElement('div');
@@ -310,7 +317,6 @@ function showResults() {
     });
 }
 
-// FIXED: Open ChatGPT with full prompt + all results
 function openAIAnalysis() {
     const scores = calculateFunctionScores();
     let resultsText = "";
@@ -319,36 +325,21 @@ function openAIAnalysis() {
         resultsText += `${f} ${scores[f]}%\n`;
     });
 
-    const prompt = `You are an expert in cognitive functions. I just took a test that ranked the 8 cognitive functions in my ascendant order with percentages.
+    const prompt = `You are an expert in cognitive functions. I just took a test that ranked the 8 cognitive functions with percentages.
 
 Here are my full results:
 
 ${resultsText}
 
-Please give me a comprehensive, honest, and detailed explanation of what this specific function order and these percentages mean about me as a person.
+Please give me a comprehensive, honest, and detailed explanation...`;  // (rest of prompt remains the same)
 
-For each function in my ranking, explain:
-- What it says about my natural way of thinking and behaving
-- How strongly it influences me based on the percentage
-- How it interacts with the functions above and below it
-- Real-life examples of how I probably show up in daily life, decision-making, relationships, work, and stress
-
-Also explain:
-- My overall cognitive style and default way of engaging with the world
-- My biggest strengths
-- My potential blind spots or growth areas
-- How the combination of my top functions creates a unique way I process life
-
-Be direct, insightful, and practical. Use clear language and avoid fluff.`;
-
-    const encodedPrompt = encodeURIComponent(prompt);
-    window.open(`https://chatgpt.com/?prompt=${encodedPrompt}`, '_blank');
+    window.open(`https://chatgpt.com/?prompt=${encodeURIComponent(prompt)}`, '_blank');
 }
 
 function copyResults() {
     const scores = calculateFunctionScores();
     const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
-    let text = "My Cognitive Function Order (ascending - least to most used):\n\n";
+    let text = "My Cognitive Function Order (least to most used):\n\n";
     sorted.forEach(f => text += `${f}: ${scores[f]}%\n`);
     navigator.clipboard.writeText(text).then(() => alert("Results copied!"));
 }
@@ -367,7 +358,7 @@ function restartTest() {
     location.reload();
 }
 
-// Initialize
+// Initialize confirm button
 document.getElementById('confirm-input').addEventListener('input', function() {
     const btn = document.getElementById('start-btn');
     btn.disabled = this.value.trim().toLowerCase() !== "confirm";
