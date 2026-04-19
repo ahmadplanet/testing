@@ -96,7 +96,7 @@
 </div>
 
 <script>
-// 80 questions (same as before)
+// 80 questions - kept exactly as you provided
 const questions = [
     // 1-20: Sensory Engagement (Se) vs Memory Stabilization (Si)
     {left: "I thrive on spontaneous adventures and new sensory experiences right now.", right: "I rely on past experiences and proven methods that have always worked."},
@@ -239,7 +239,7 @@ function renderQuestions() {
 
 function updateValue(slider, index) {
     let val = parseInt(slider.value);
-    let displayVal = Math.abs(val - 50) * 2;   // 0 to 100 strength
+    let displayVal = Math.abs(val - 50) * 2;
     document.getElementById(slider.id + '-val').textContent = displayVal + '%';
     answers[index] = val;
 }
@@ -263,31 +263,34 @@ function calculateFunctionScores() {
     };
 
     for (let pair = 0; pair < 4; pair++) {
+        let leftTotal = 0;
+        let rightTotal = 0;
+
         for (let i = 0; i < 20; i++) {
             const idx = pair * 20 + i;
-            const raw = answers[idx];                    // 0 to 100
-            const strength = Math.abs(raw - 50) * 2;     // 0 to 100
+            const raw = answers[idx];
 
-            if (raw <= 50) {
-                // Left side strength
-                if (pair === 0) scores["Sensory Engagement Processing (Se)"] += strength;
-                if (pair === 1) scores["Exploratory Generative Processing (Ne)"] += strength;
-                if (pair === 2) scores["External Structuring Processing (Te)"] += strength;
-                if (pair === 3) scores["Social Alignment Processing (Fe)"] += strength;
-            } else {
-                // Right side strength
-                if (pair === 0) scores["Memory Stabilization Processing (Si)"] += strength;
-                if (pair === 1) scores["Predictive Integrative Processing (Ni)"] += strength;
-                if (pair === 2) scores["Internal Logical Modeling (Ti)"] += strength;
-                if (pair === 3) scores["Internal Valuation Processing (Fi)"] += strength;
-            }
+            leftTotal += raw;                    // Left side contribution
+            rightTotal += (100 - raw);           // Right side contribution (complementary)
+        }
+
+        const leftAvg = Math.round(leftTotal / 20);
+        const rightAvg = Math.round(rightTotal / 20);
+
+        if (pair === 0) {
+            scores["Sensory Engagement Processing (Se)"] = leftAvg;
+            scores["Memory Stabilization Processing (Si)"] = rightAvg;
+        } else if (pair === 1) {
+            scores["Exploratory Generative Processing (Ne)"] = leftAvg;
+            scores["Predictive Integrative Processing (Ni)"] = rightAvg;
+        } else if (pair === 2) {
+            scores["External Structuring Processing (Te)"] = leftAvg;
+            scores["Internal Logical Modeling (Ti)"] = rightAvg;
+        } else if (pair === 3) {
+            scores["Social Alignment Processing (Fe)"] = leftAvg;
+            scores["Internal Valuation Processing (Fi)"] = rightAvg;
         }
     }
-
-    // Normalize to max 100
-    Object.keys(scores).forEach(key => {
-        scores[key] = Math.round(scores[key] / 20);
-    });
 
     return scores;
 }
