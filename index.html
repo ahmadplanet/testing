@@ -8,17 +8,9 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Inter', system_ui, sans-serif; }
-        input[type="range"] {
-            accent-color: #10b981;
-            height: 14px;
-            border-radius: 9999px;
-        }
-        .question-card {
-            transition: transform 0.2s;
-        }
-        .question-card:hover {
-            transform: translateY(-4px);
-        }
+        input[type="range"] { accent-color: #10b981; height: 14px; border-radius: 9999px; }
+        .question-card { transition: transform 0.2s; }
+        .question-card:hover { transform: translateY(-4px); }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
@@ -29,50 +21,29 @@
         <div class="bg-white dark:bg-slate-800 rounded-3xl p-12 max-w-2xl mx-auto">
             <h1 class="text-4xl font-bold text-center mb-10">Integrated Cognitive Trait System (ICTS) Test</h1>
             <div class="mb-10">
-                <h2 class="text-2xl font-semibold mb-6">Important Instructions Before Starting</h2>
+                <h2 class="text-2xl font-semibold mb-6">Important Instructions</h2>
                 <ul class="space-y-8 text-lg">
-                    <li class="flex gap-4">
-                        <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
-                        <div>
-                            <strong>Answer based on how you generally are in life</strong><br>
-                            Think about your natural patterns and typical behavior over a long period of time.
-                        </div>
-                    </li>
-                    <li class="flex gap-4">
-                        <span class="text-emerald-600 font-bold text-3xl leading-none">•</span>
-                        <div>
-                            <strong>Be honest with yourself</strong><br>
-                            There are no right or wrong answers. Slide toward the side you relate to more.
-                        </div>
-                    </li>
+                    <li class="flex gap-4"><span class="text-emerald-600 font-bold text-3xl">•</span><div><strong>Answer based on how you generally are</strong><br>Long-term patterns and typical behavior.</div></li>
+                    <li class="flex gap-4"><span class="text-emerald-600 font-bold text-3xl">•</span><div><strong>Be honest</strong><br>Slide toward the side you relate to more.</div></li>
                 </ul>
             </div>
             <div class="text-center">
-                <p class="text-slate-500 mb-4">To continue, please type the word <strong>confirm</strong> below:</p>
-                <input id="confirm-input" type="text"
-                       class="w-full max-w-xs mx-auto block border border-slate-300 dark:border-slate-600 bg-transparent rounded-2xl px-6 py-4 text-center text-xl focus:outline-none focus:border-emerald-500"
-                       placeholder="type confirm">
-                <button onclick="startTest()"
-                        class="mt-8 px-16 py-6 bg-emerald-600 text-white font-semibold text-2xl rounded-3xl disabled:opacity-50"
-                        id="start-btn" disabled>
-                    Start the Test
-                </button>
+                <p class="text-slate-500 mb-4">Type <strong>confirm</strong> to continue:</p>
+                <input id="confirm-input" type="text" class="w-full max-w-xs mx-auto block border border-slate-300 dark:border-slate-600 bg-transparent rounded-2xl px-6 py-4 text-center text-xl focus:outline-none focus:border-emerald-500" placeholder="type confirm">
+                <button onclick="startTest()" id="start-btn" disabled class="mt-8 px-16 py-6 bg-emerald-600 text-white font-semibold text-2xl rounded-3xl">Start the Test</button>
             </div>
         </div>
     </div>
 
-    <!-- Main Test -->
+    <!-- Test Screen -->
     <div id="test-screen" class="hidden">
         <div class="text-center mb-12">
             <h1 class="text-5xl font-bold">Integrated Cognitive Trait System (ICTS) Test</h1>
-            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">80 questions • Slide toward the side you relate to more</p>
+            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400">90 questions • 80 cognitive + 10 Turbulent/Assertive</p>
         </div>
         <div id="questions-container" class="space-y-12"></div>
         <div class="flex justify-center mt-20">
-            <button onclick="submitTest()"
-                    class="px-20 py-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-3xl rounded-3xl shadow-2xl transition-all">
-                Finish Test & See Results
-            </button>
+            <button onclick="submitTest()" class="px-20 py-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-semibold text-3xl rounded-3xl shadow-2xl">Finish Test & See Results</button>
         </div>
     </div>
 
@@ -81,9 +52,16 @@
         <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-14">
             <div class="text-center mb-12">
                 <h2 class="text-5xl font-bold">Your ICTS Cognitive Profile</h2>
-                <p class="text-slate-500 dark:text-slate-400 mt-4">Ranked ascending (least prominent → most prominent) with percentages</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-4">Ranked from least to most prominent</p>
             </div>
             <div id="function-list" class="space-y-7"></div>
+
+            <!-- Turbulent / Assertive -->
+            <div class="mt-16 pt-12 border-t border-slate-200 dark:border-slate-700">
+                <h3 class="text-2xl font-bold text-center mb-8">Identity Orientation</h3>
+                <div id="ta-result" class="flex items-center gap-8 p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl"></div>
+            </div>
+
             <div class="flex justify-center gap-6 mt-16">
                 <button onclick="copyResults()" class="px-12 py-6 bg-slate-100 dark:bg-slate-800 rounded-3xl font-medium text-xl">📋 Copy Results</button>
                 <button onclick="saveAsImage()" class="px-12 py-6 bg-emerald-600 text-white rounded-3xl font-medium text-xl">📸 Save Image</button>
@@ -96,107 +74,119 @@
 </div>
 
 <script>
-// 80 questions - kept exactly as you provided
+// ==================== 90 QUESTIONS ====================
 const questions = [
     // 1-20: Sensory Engagement (Se) vs Memory Stabilization (Si)
     {left: "I thrive on spontaneous adventures and new sensory experiences right now.", right: "I rely on past experiences and proven methods that have always worked."},
     {left: "I live fully in the moment and react immediately to what is happening.", right: "I prefer stability, predictability, and consistent routines."},
-    {left: "I quickly notice concrete details and physical things around me.", right: "I compare new situations to similar past experiences."},
-    {left: "I enjoy trying new foods, activities, and sensations without overthinking.", right: "I find comfort in familiar places, habits, and reliable ways."},
-    {left: "I am action-oriented and jump into things right away.", right: "I approach tasks carefully and methodically using what I know works."},
-    {left: "I get energized by fast-paced and stimulating environments.", right: "I pay close attention to how things have always been done."},
-    {left: "I trust my immediate impressions and gut reactions.", right: "I have a strong, detailed memory for facts and past events."},
-    {left: "I focus on the here-and-now realities.", right: "I respect established procedures and traditions."},
-    {left: "I prefer to engage with the physical world directly and hands-on.", right: "I find security in reliable habits and familiar sensory details."},
-    {left: "I notice new opportunities in my immediate surroundings.", right: "I value things that have proven reliable over time."},
-    {left: "I love variety and new physical experiences.", right: "I like things to stay consistent and predictable."},
-    {left: "I react quickly to changes in my environment.", right: "I prefer to stick with what I know works."},
-    {left: "I enjoy being in the middle of action and excitement.", right: "I feel comfortable with familiar routines."},
-    {left: "I trust what I see and experience right now.", right: "I trust what has worked well in the past."},
-    {left: "I like to try new things on the spot.", right: "I like to follow proven methods."},
-    {left: "I am energized by novelty and change.", right: "I am energized by stability and continuity."},
-    {left: "I focus on current sensory input.", right: "I focus on past sensory memories."},
-    {left: "I prefer to improvise in the moment.", right: "I prefer to plan based on previous experience."},
-    {left: "I notice small changes in my surroundings immediately.", right: "I remember small details from the past clearly."},
-    {left: "I enjoy physical movement and activity.", right: "I enjoy quiet reflection on past experiences."},
+    {left: "I am very action-oriented and jump into physical things without planning.", right: "I carefully consider past outcomes before acting."},
+    {left: "I get energized by fast-paced, high-stimulation environments.", right: "I feel most comfortable in calm, familiar settings."},
+    {left: "I notice and react instantly to small changes in my surroundings.", right: "I have a very detailed memory of how things used to be."},
+    {left: "I love trying extreme sports, new foods, and intense experiences.", right: "I stick to trusted routines and familiar experiences."},
+    {left: "I make quick decisions based on what feels exciting right now.", right: "I trust what has proven reliable over many years."},
+    {left: "I naturally take charge in chaotic situations and improvise on the spot.", right: "I prefer following established procedures I know work."},
+    {left: "I am very present-focused and rarely dwell on the past.", right: "I often reflect on past memories and lessons learned."},
+    {left: "I seek out new thrills and physical sensations regularly.", right: "I find comfort in tradition and repetition."},
+    {left: "I adapt my body and movements fluidly to whatever is happening.", right: "I rely heavily on muscle memory and habits."},
+    {left: "I get bored easily if life becomes too routine.", right: "I feel secure when life is predictable and stable."},
+    {left: "I trust my immediate senses and gut reactions.", right: "I trust accumulated knowledge and past evidence."},
+    {left: "I feel most alive when I’m in the middle of action.", right: "I feel most grounded when surrounded by the familiar."},
+    {left: "I tend to lead with my body and physical instincts.", right: "I tend to lead with caution based on history."},
+    {left: "I love constant variety and change in daily life.", right: "I like things to stay consistent and predictable."},
+    {left: "I react quickly to changes in tone, lighting, or atmosphere.", right: "I remember small sensory details from years ago."},
+    {left: "I am very impulsive when something looks fun.", right: "I am very deliberate and methodical."},
+    {left: "I notice opportunities in my immediate physical environment.", right: "I value things that have stood the test of time."},
+    {left: "I feel energized by intense real-world engagement.", right: "I feel energized by quiet reflection on past experiences."},
 
     // 21-40: Exploratory Generative (Ne) vs Predictive Integrative (Ni)
-    {left: "I love brainstorming many different possibilities and 'what if' ideas.", right: "I have strong gut feelings and visions about the future."},
-    {left: "I easily see connections between seemingly unrelated things.", right: "I focus on long-term visions and underlying meanings."},
-    {left: "I get bored with routine and seek variety and new options.", right: "I seek to understand the core essence behind events."},
-    {left: "I often have many different projects or ideas going at once.", right: "I prefer to converge on one clear best direction."},
-    {left: "I think divergently and let my mind branch in many directions.", right: "I spend time reflecting on future implications."},
-    {left: "I am inspired by new concepts and emerging trends.", right: "I notice symbolic meanings and hidden patterns."},
-    {left: "I enjoy debating ideas and bouncing possibilities off others.", right: "I am strategic and forward-thinking about where things are headed."},
-    {left: "I look for patterns and opportunities in the world around me.", right: "I trust my internal foresight and intuitive vision."},
-    {left: "I am naturally creative and come up with fresh approaches.", right: "I have a deep sense of purpose guiding my choices."},
-    {left: "I explore hypothetical situations for fun.", right: "I predict likely outcomes based on subtle trends."},
-    {left: "I enjoy keeping many options open.", right: "I like to narrow down to the most likely path."},
-    {left: "I see many possible futures.", right: "I see one clear future direction."},
-    {left: "I love generating new ideas quickly.", right: "I prefer to develop one deep insight."},
-    {left: "I get excited by potential and possibilities.", right: "I get excited by certainty and foresight."},
-    {left: "I connect unrelated concepts easily.", right: "I see the single underlying pattern."},
-    {left: "I prefer divergent thinking.", right: "I prefer convergent thinking."},
-    {left: "I am comfortable with ambiguity and multiple paths.", right: "I seek clarity and a single best path."},
-    {left: "I enjoy playing with ideas.", right: "I enjoy refining a vision."},
-    {left: "I see many ways things could go.", right: "I see where things are inevitably heading."},
-    {left: "I thrive on brainstorming sessions.", right: "I thrive on quiet strategic thinking."},
+    {left: "I love brainstorming many different possibilities and 'what if' scenarios.", right: "I often have strong gut feelings about where things are heading."},
+    {left: "I connect unrelated ideas rapidly and creatively.", right: "I focus on long-term visions and underlying truths."},
+    {left: "I keep many projects and ideas going at the same time.", right: "I prefer converging on one clear future direction."},
+    {left: "I get excited exploring every possible outcome.", right: "I trust my internal foresight and singular vision."},
+    {left: "I see many different paths in almost every situation.", right: "I usually sense the one inevitable path forward."},
+    {left: "I frequently change direction when a better idea appears.", right: "I stay committed to my long-term vision."},
+    {left: "I enjoy playing with abstract concepts and wild theories.", right: "I seek deep insight into the core meaning of events."},
+    {left: "I thrive in brainstorming sessions with others.", right: "I prefer quiet strategic thinking alone."},
+    {left: "I am very idea-oriented and generate options quickly.", right: "I am very purpose-driven with a clear future focus."},
+    {left: "I feel restless when stuck in one way of thinking.", right: "I feel grounded when I have a strong long-term direction."},
+    {left: "I love remixing concepts from completely different fields.", right: "I focus on distilling everything into one fundamental truth."},
+    {left: "I often wonder how things could be completely different.", right: "I can usually predict how things will turn out."},
+    {left: "I get bored when there are no new possibilities.", right: "I feel satisfied when I understand the bigger picture."},
+    {left: "I naturally think divergently and explore many options.", right: "I naturally think convergently toward one goal."},
+    {left: "I am highly imaginative and speculative.", right: "I am highly insightful and prophetic."},
+    {left: "New ideas excite me more than concrete plans.", right: "A clear long-term vision gives me direction."},
+    {left: "I enjoy debating multiple perspectives.", right: "I prefer refining one deep insight."},
+    {left: "I see opportunities everywhere.", right: "I see the underlying pattern and destiny."},
+    {left: "I tend to lead with creativity and possibilities.", right: "I tend to lead with foresight and intuition."},
+    {left: "I jump between ideas rapidly.", right: "I develop one idea deeply over time."},
 
     // 41-60: External Structuring (Te) vs Internal Logical Modeling (Ti)
-    {left: "I enjoy organizing people and tasks to achieve efficient results.", right: "I analyze things deeply to understand their internal logic."},
-    {left: "I focus on measurable outcomes and getting things done.", right: "I seek absolute logical consistency and accuracy."},
-    {left: "I like creating clear plans and systems.", right: "I prefer to think independently and question assumptions."},
-    {left: "I value logic, objectivity, and evidence-based decisions.", right: "I value personal intellectual integrity over consensus."},
-    {left: "I am skilled at managing time and ensuring completion.", right: "I enjoy breaking complex ideas into fundamental principles."},
-    {left: "I prefer clear structures and hierarchies.", right: "I spend time refining my own internal models."},
-    {left: "I quickly spot inefficiencies and fix them.", right: "I am excellent at troubleshooting root causes."},
-    {left: "I make decisions based on facts and logical consequences.", right: "I make decisions based on careful personal analysis."},
-    {left: "I am assertive when implementing plans.", right: "I enjoy puzzles requiring deep logical thought."},
-    {left: "I naturally think in terms of cause-and-effect.", right: "I strive for complete intellectual independence."},
-    {left: "I focus on practical results and efficiency.", right: "I focus on internal logical truth."},
+    {left: "I enjoy organizing people and systems for maximum efficiency.", right: "I enjoy deeply analyzing logic and underlying principles."},
+    {left: "I focus on measurable results and getting things done.", right: "I prioritize absolute logical consistency."},
+    {left: "I naturally take charge and direct groups toward goals.", right: "I prefer working independently to understand things deeply."},
+    {left: "I quickly spot and fix inefficiencies.", right: "I enjoy breaking ideas down into fundamental truths."},
+    {left: "I make fast, decisive decisions based on logic.", right: "I take time to ensure my reasoning is sound."},
+    {left: "I value clear structures, plans, and accountability.", right: "I value intellectual independence and precision."},
+    {left: "I tend to lead with logic and external results.", right: "I tend to lead with deep internal understanding."},
+    {left: "I feel satisfied when plans are successfully executed.", right: "I feel satisfied when I fully comprehend how something works."},
+    {left: "I am very goal-oriented and execution-focused.", right: "I am very analytical and principle-focused."},
+    {left: "I optimize for productivity and real-world impact.", right: "I optimize for elegance and internal coherence."},
+    {left: "I enjoy leading teams and implementing strategies.", right: "I enjoy solving complex theoretical problems."},
+    {left: "I am good at managing resources and timelines.", right: "I am good at finding logical flaws."},
+    {left: "I make decisions based on evidence and outcomes.", right: "I make decisions based on internal logical consistency."},
     {left: "I like things to be organized externally.", right: "I like things to make sense internally."},
-    {left: "I enjoy leading and directing others.", right: "I enjoy understanding how things work."},
-    {left: "I value productivity and measurable success.", right: "I value precision and accuracy."},
-    {left: "I prefer objective standards.", right: "I prefer my own logical framework."},
-    {left: "I am good at executing plans.", right: "I am good at analyzing concepts."},
-    {left: "I focus on what works in the real world.", right: "I focus on what is logically consistent."},
-    {left: "I like to optimize external systems.", right: "I like to perfect internal understanding."},
-    {left: "I make quick, decisive calls based on logic.", right: "I take time to ensure logical soundness."},
-    {left: "I enjoy achieving tangible goals.", right: "I enjoy solving complex problems."},
+    {left: "I tend to be assertive and directive.", right: "I tend to be precise and questioning."},
+    {left: "I focus on what works in practice.", right: "I focus on what is logically pure."},
+    {left: "I enjoy creating efficient workflows.", right: "I enjoy building elegant mental models."},
+    {left: "I lead with confidence in execution.", right: "I lead with depth of understanding."},
+    {left: "I value results over perfection.", right: "I value accuracy over speed."},
+    {left: "I am very pragmatic and objective.", right: "I am very analytical and independent."},
 
     // 61-80: Social Alignment (Fe) vs Internal Valuation (Fi)
-    {left: "I prioritize group harmony and other people’s feelings.", right: "I have a strong personal moral code that guides me."},
-    {left: "I am highly attuned to the emotional atmosphere.", right: "I deeply value authenticity and being true to myself."},
-    {left: "I enjoy helping others and creating positive group experiences.", right: "I make choices based on what feels right to my inner values."},
-    {left: "I express emotions openly and value social norms.", right: "I experience emotions intensely but keep them private."},
-    {left: "I am skilled at reading people and maintaining harmony.", right: "I prioritize my own sense of integrity."},
-    {left: "I make decisions based on what is best for the group.", right: "I am passionate about causes that align with my core values."},
-    {left: "I seek social approval and strong relationships.", right: "I reflect on my own emotions and what truly matters."},
-    {left: "I am diplomatic and considerate of others’ feelings.", right: "I remain loyal to my personal beliefs."},
-    {left: "I feel responsible for the emotional well-being of the group.", right: "I find it important to express my unique identity."},
-    {left: "I value traditions that bring people together.", right: "I judge situations based on personal moral rightness."},
-    {left: "I focus on group needs and harmony.", right: "I focus on my own inner values."},
-    {left: "I like to create a positive atmosphere for everyone.", right: "I like to stay true to who I am."},
-    {left: "I am sensitive to how others feel.", right: "I am sensitive to my own moral compass."},
-    {left: "I adjust my behavior to keep peace.", right: "I stay authentic even if it causes tension."},
-    {left: "I value social connection and belonging.", right: "I value individual authenticity."},
-    {left: "I consider the impact on others first.", right: "I consider my own values first."},
+    {left: "I prioritize group harmony and other people’s feelings.", right: "I have a strong personal moral code I always follow."},
+    {left: "I am highly attuned to the emotional atmosphere.", right: "I experience emotions intensely but keep them private."},
+    {left: "I tend to lead with emotions and social awareness.", right: "I tend to lead with my own inner values and authenticity."},
+    {left: "I feel responsible for everyone’s emotional well-being.", right: "I feel responsible for staying true to myself."},
+    {left: "I am very emotional and expressive with others.", right: "I am very emotional but private about it."},
+    {left: "I adjust my behavior to keep peace in the group.", right: "I stay authentic even if it causes conflict."},
+    {left: "I make decisions based on what is best for the group.", right: "I make decisions based on my personal values."},
+    {left: "I feel happy when the people around me are happy.", right: "I feel happy when I am being true to myself."},
+    {left: "I am very sensitive to how others feel.", right: "I am very sensitive to my own moral compass."},
+    {left: "I value social connection and belonging highly.", right: "I value individual authenticity above all."},
+    {left: "I naturally put others’ needs before my own.", right: "I naturally prioritize my inner sense of right and wrong."},
+    {left: "I am skilled at mediating conflicts.", right: "I am skilled at standing by my convictions."},
+    {left: "I seek social approval and strong relationships.", right: "I seek personal integrity and authenticity."},
+    {left: "I tend to be warm and accommodating.", right: "I tend to be independent and principled."},
+    {left: "I focus on collective well-being.", right: "I focus on personal moral integrity."},
     {left: "I enjoy making people feel included.", right: "I enjoy living according to my principles."},
-    {left: "I am good at mediating conflicts.", right: "I am good at standing by my convictions."},
-    {left: "I feel happy when the group is happy.", right: "I feel happy when I am being true to myself."},
-    {left: "I prioritize collective well-being.", right: "I prioritize personal integrity."}
+    {left: "I am diplomatic and considerate of group mood.", right: "I remain loyal to my personal beliefs."},
+    {left: "I feel others’ emotions strongly.", right: "I feel my own values very deeply."},
+    {left: "I prioritize harmony.", right: "I prioritize authenticity."},
+    {left: "I tend to be empathetic and people-oriented.", right: "I tend to be idealistic and value-driven."},
+
+    // 81-90: Turbulent (T) vs Assertive (A)
+    {left: "I often worry about what could go wrong and feel stressed easily.", right: "I am confident and rarely doubt my abilities."},
+    {left: "I am very sensitive to criticism and take it personally.", right: "I handle criticism well and stay emotionally steady."},
+    {left: "I tend to overthink and second-guess my decisions.", right: "I trust my choices and move forward decisively."},
+    {left: "I experience strong emotional ups and downs.", right: "I remain calm and composed under pressure."},
+    {left: "I frequently doubt myself and seek reassurance.", right: "I have strong self-confidence and self-assurance."},
+    {left: "I am very self-conscious in social situations.", right: "I am assertive and comfortable being myself."},
+    {left: "I get overwhelmed by stress and setbacks.", right: "I bounce back quickly from failures."},
+    {left: "I worry a lot about the future and my performance.", right: "I focus on solutions and stay optimistic."},
+    {left: "I am sensitive and easily affected by others' moods.", right: "I am emotionally resilient and stable."},
+    {left: "I tend to be more anxious and perfectionistic.", right: "I tend to be more relaxed and self-assured."}
 ];
 
-let answers = new Array(80).fill(50);
+let answers = new Array(90).fill(50);
 
+// ==================== FUNCTIONS ====================
 function startTest() {
-    const input = document.getElementById('confirm-input').value.trim().toLowerCase();
-    if (input === "confirm") {
+    if (document.getElementById('confirm-input').value.trim().toLowerCase() === "confirm") {
         document.getElementById('rules-screen').classList.add('hidden');
         document.getElementById('test-screen').classList.remove('hidden');
         renderQuestions();
     } else {
-        alert("Please type the word 'confirm' exactly to continue.");
+        alert("Please type 'confirm' to start.");
     }
 }
 
@@ -205,30 +195,26 @@ function renderQuestions() {
     let html = '';
     questions.forEach((q, i) => {
         const id = `q${i}`;
-        const num = i + 1;
         html += `
             <div class="question-card bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-10">
-                <div class="flex justify-between items-start mb-8">
-                    <div class="flex items-center gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center font-bold text-xl">${num}</div>
-                    </div>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-2xl flex items-center justify-center font-bold text-xl">${i+1}</div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div>
-                        <div class="text-xs uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-2">LEFT SIDE</div>
-                        <div class="text-slate-700 dark:text-slate-200 text-lg leading-relaxed">${q.left}</div>
+                        <div class="text-xs uppercase tracking-widest text-emerald-600 mb-2">LEFT SIDE</div>
+                        <div class="text-lg leading-relaxed">${q.left}</div>
                     </div>
                     <div>
-                        <div class="text-xs uppercase tracking-widest text-rose-600 dark:text-rose-400 mb-2">RIGHT SIDE</div>
-                        <div class="text-slate-700 dark:text-slate-200 text-lg leading-relaxed">${q.right}</div>
+                        <div class="text-xs uppercase tracking-widest text-rose-600 mb-2">RIGHT SIDE</div>
+                        <div class="text-lg leading-relaxed">${q.right}</div>
                     </div>
                 </div>
                 <div class="flex flex-col items-center mt-10">
-                    <input type="range" id="${id}" min="0" max="100" value="50"
-                           oninput="updateValue(this, ${i})" class="w-full mb-4">
+                    <input type="range" id="${id}" min="0" max="100" value="50" oninput="updateValue(this, ${i})" class="w-full mb-4">
                     <div class="flex justify-between w-full text-sm text-slate-400">
                         <span>Left</span>
-                        <span id="${id}-val" class="font-bold text-emerald-600 dark:text-emerald-400 text-2xl">50%</span>
+                        <span id="${id}-val" class="font-bold text-2xl text-emerald-600">50%</span>
                         <span>Right</span>
                     </div>
                 </div>
@@ -238,10 +224,80 @@ function renderQuestions() {
 }
 
 function updateValue(slider, index) {
-    let val = parseInt(slider.value);
-    let displayVal = Math.abs(val - 50) * 2;
-    document.getElementById(slider.id + '-val').textContent = displayVal + '%';
+    const val = parseInt(slider.value);
+    const display = Math.abs(val - 50) * 2;
+    document.getElementById(slider.id + '-val').textContent = display + '%';
     answers[index] = val;
+}
+
+function calculateScores() {
+    const scores = {
+        "Sensory Engagement (Se)": 0, "Memory Stabilization (Si)": 0,
+        "Exploratory Generative (Ne)": 0, "Predictive Integrative (Ni)": 0,
+        "External Structuring (Te)": 0, "Internal Logical Modeling (Ti)": 0,
+        "Social Alignment (Fe)": 0, "Internal Valuation (Fi)": 0,
+        "Turbulent": 0, "Assertive": 0
+    };
+
+    // Cognitive functions (20 each)
+    for (let pair = 0; pair < 4; pair++) {
+        let left = 0, right = 0;
+        for (let i = 0; i < 20; i++) {
+            const idx = pair * 20 + i;
+            left += answers[idx];
+            right += (100 - answers[idx]);
+        }
+        const leftAvg = Math.round(left / 20);
+        const rightAvg = Math.round(right / 20);
+
+        if (pair === 0) { scores["Sensory Engagement (Se)"] = leftAvg; scores["Memory Stabilization (Si)"] = rightAvg; }
+        else if (pair === 1) { scores["Exploratory Generative (Ne)"] = leftAvg; scores["Predictive Integrative (Ni)"] = rightAvg; }
+        else if (pair === 2) { scores["External Structuring (Te)"] = leftAvg; scores["Internal Logical Modeling (Ti)"] = rightAvg; }
+        else if (pair === 3) { scores["Social Alignment (Fe)"] = leftAvg; scores["Internal Valuation (Fi)"] = rightAvg; }
+    }
+
+    // Turbulent vs Assertive (81-90)
+    let tTotal = 0;
+    for (let i = 80; i < 90; i++) tTotal += answers[i];
+    scores["Turbulent"] = Math.round(tTotal / 10);
+    scores["Assertive"] = 100 - scores["Turbulent"];
+
+    return scores;
+}
+
+function showResults() {
+    const scores = calculateScores();
+    const container = document.getElementById('function-list');
+    container.innerHTML = '';
+
+    const cognitiveKeys = Object.keys(scores).filter(k => !["Turbulent","Assertive"].includes(k));
+    cognitiveKeys.sort((a,b) => scores[a] - scores[b]);
+
+    cognitiveKeys.forEach(func => {
+        const perc = scores[func];
+        const div = document.createElement('div');
+        div.className = "flex items-center gap-8 p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl";
+        div.innerHTML = `
+            <div class="w-80 text-xl font-semibold">${func}</div>
+            <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500" style="width: ${perc}%"></div>
+            </div>
+            <div class="text-right font-bold text-6xl">${perc}<span class="text-2xl align-super">%</span></div>
+        `;
+        container.appendChild(div);
+    });
+
+    // T/A Result
+    const t = scores["Turbulent"];
+    const label = t >= 50 ? "Turbulent (T)" : "Assertive (A)";
+    const color = t >= 50 ? "from-rose-500 to-orange-500" : "from-blue-500 to-cyan-500";
+    document.getElementById('ta-result').innerHTML = `
+        <div class="w-80 text-xl font-semibold">${label}</div>
+        <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
+            <div class="h-full bg-gradient-to-r ${color}" style="width: ${t}%"></div>
+        </div>
+        <div class="text-right font-bold text-6xl">${t}<span class="text-2xl align-super">%</span></div>
+    `;
 }
 
 function submitTest() {
@@ -250,98 +306,26 @@ function submitTest() {
     showResults();
 }
 
-function calculateFunctionScores() {
-    let scores = {
-        "Sensory Engagement Processing (Se)": 0,
-        "Memory Stabilization Processing (Si)": 0,
-        "Exploratory Generative Processing (Ne)": 0,
-        "Predictive Integrative Processing (Ni)": 0,
-        "External Structuring Processing (Te)": 0,
-        "Internal Logical Modeling (Ti)": 0,
-        "Social Alignment Processing (Fe)": 0,
-        "Internal Valuation Processing (Fi)": 0
-    };
-
-    for (let pair = 0; pair < 4; pair++) {
-        let leftTotal = 0;
-        let rightTotal = 0;
-
-        for (let i = 0; i < 20; i++) {
-            const idx = pair * 20 + i;
-            const raw = answers[idx];
-
-            leftTotal += raw;                    // Left side contribution
-            rightTotal += (100 - raw);           // Right side contribution (complementary)
-        }
-
-        const leftAvg = Math.round(leftTotal / 20);
-        const rightAvg = Math.round(rightTotal / 20);
-
-        if (pair === 0) {
-            scores["Sensory Engagement Processing (Se)"] = leftAvg;
-            scores["Memory Stabilization Processing (Si)"] = rightAvg;
-        } else if (pair === 1) {
-            scores["Exploratory Generative Processing (Ne)"] = leftAvg;
-            scores["Predictive Integrative Processing (Ni)"] = rightAvg;
-        } else if (pair === 2) {
-            scores["External Structuring Processing (Te)"] = leftAvg;
-            scores["Internal Logical Modeling (Ti)"] = rightAvg;
-        } else if (pair === 3) {
-            scores["Social Alignment Processing (Fe)"] = leftAvg;
-            scores["Internal Valuation Processing (Fi)"] = rightAvg;
-        }
-    }
-
-    return scores;
-}
-
-function showResults() {
-    const scores = calculateFunctionScores();
-    const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
-    const container = document.getElementById('function-list');
-    container.innerHTML = '';
-
-    sorted.forEach(func => {
-        const perc = scores[func];
-        const div = document.createElement('div');
-        div.className = "flex items-center gap-8 p-8 bg-slate-50 dark:bg-slate-800 rounded-3xl";
-        div.innerHTML = `
-            <div class="w-80 text-xl font-semibold text-emerald-600">${func}</div>
-            <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-6 overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500" style="width: ${perc}%"></div>
-            </div>
-            <div class="text-right font-bold text-6xl">${perc}<span class="text-2xl align-super font-normal">%</span></div>
-        `;
-        container.appendChild(div);
-    });
-}
-
 function copyResults() {
-    const scores = calculateFunctionScores();
-    const sorted = Object.keys(scores).sort((a, b) => scores[a] - scores[b]);
-    let text = "My ICTS Cognitive Profile (ascending - least to most prominent):\n\n";
-    sorted.forEach(f => text += `${f}: ${scores[f]}%\n`);
+    const scores = calculateScores();
+    let text = "ICTS Cognitive Profile\n\n";
+    Object.keys(scores).forEach(k => text += `${k}: ${scores[k]}%\n`);
     navigator.clipboard.writeText(text).then(() => alert("Results copied!"));
 }
 
 function saveAsImage() {
-    const resultsDiv = document.getElementById('results-screen');
-    html2canvas(resultsDiv, {scale: 2}).then(canvas => {
+    html2canvas(document.getElementById('results-screen'), {scale: 2}).then(canvas => {
         const a = document.createElement('a');
-        a.download = 'icts-cognitive-profile.png';
+        a.download = 'icts-profile.png';
         a.href = canvas.toDataURL();
         a.click();
     });
 }
 
-function restartTest() {
-    location.reload();
-}
+function restartTest() { location.reload(); }
 
-// Initialize confirm button
 document.getElementById('confirm-input').addEventListener('input', function() {
-    const btn = document.getElementById('start-btn');
-    btn.disabled = this.value.trim().toLowerCase() !== "confirm";
+    document.getElementById('start-btn').disabled = this.value.trim().toLowerCase() !== "confirm";
 });
 </script>
 </body>
